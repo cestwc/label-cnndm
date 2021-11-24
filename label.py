@@ -96,6 +96,9 @@ def tokenize(e):
 	article['labels'] = list(labels)
 	return article
 
+scorer = rouge_scorer.RougeScorer(['rouge1', 'rouge2', 'rougeL'], use_stemmer=True)
+
+table_ = str.maketrans(string.punctuation, ' '*len(string.punctuation))
 
 def obj_func_single(inputs, variables):
 	mask = inputs['labels'].astype(bool)
@@ -141,10 +144,6 @@ def main():
 	print(f"Number of training examples: {len(tokenized_data)}")
 
 	tokenized_data.set_format(type = 'numpy', columns=['input_ids', 'labels', 'confined', 'highlights'])
-
-	scorer = rouge_scorer.RougeScorer(['rouge1', 'rouge2', 'rougeL'], use_stemmer=True)
-
-	table_ = str.maketrans(string.punctuation, ' '*len(string.punctuation))
 
 	labelled_data = tokenized_data.map(highlight, batched=False)
 
