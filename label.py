@@ -55,7 +55,7 @@ def enlarge(ids):
     B = set().union(*[interchangeable[a] for a in A])
     return B, B - A
 
-def punkts():
+def punkts(tokenizer):
     punkt = set()
     G = tokenizer.convert_ids_to_tokens(1437)
 
@@ -126,7 +126,7 @@ def main():
 
     interchangeable = alike(tokenizer)
 
-    punctuation = punkts()
+    punctuation = punkts(tokenizer)
 
     tokenized_data = raw_data.map(tokenize, batched=True)
 
