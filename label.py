@@ -53,6 +53,10 @@ def alike():
 
 	return {vocab[k]:v for k, v in tokens.items()}
 
+interchangeable = alike()
+
+	punctuation = punkts()
+
 def enlarge(ids):
 	A = set(ids)
 	B = set().union(*[interchangeable[a] for a in A])
@@ -67,6 +71,8 @@ def punkts():
 			punkt.add(v)
 
 	return punkt
+
+punctuation = punkts()
 
 def confine(input_ids, highlights_ids):
 	W = enlarge(highlights_ids)[0] - {1}
@@ -124,10 +130,6 @@ def main():
 	useful = lambda x: len(x['article']) > len(x['highlights']) + 500
 
 	raw_data = load_from_disk(opt.dataPath)[opt.split].filter(useful).shard(opt.shard, opt.index)
-
-	interchangeable = alike()
-
-	punctuation = punkts()
 
 	tokenized_data = raw_data.map(tokenize, batched=True)
 
