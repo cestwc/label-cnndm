@@ -30,7 +30,10 @@ parser.add_argument("--save", type=str, default='/content/drive/My Drive/Colab N
 
 opt = parser.parse_args()
 
-def alike(tokenizer):
+tokenizer = RobertaTokenizerFast.from_pretrained('roberta-base')
+
+
+def alike():
 	vocab = tokenizer.get_vocab()
 	tokens = {k:{v} for k, v in vocab.items()}
 	s = tokenizer.convert_ids_to_tokens(1437)
@@ -55,7 +58,7 @@ def enlarge(ids):
 	B = set().union(*[interchangeable[a] for a in A])
 	return B, B - A
 
-def punkts(tokenizer):
+def punkts():
 	punkt = set()
 	G = tokenizer.convert_ids_to_tokens(1437)
 
@@ -118,15 +121,13 @@ def highlight(e):
 	return e
 
 def main():
-	tokenizer = RobertaTokenizerFast.from_pretrained('roberta-base')
-
 	useful = lambda x: len(x['article']) > len(x['highlights']) + 500
 
 	raw_data = load_from_disk(opt.dataPath)[opt.split].filter(useful).shard(opt.shard, opt.index)
 
-	interchangeable = alike(tokenizer)
+	interchangeable = alike()
 
-	punctuation = punkts(tokenizer)
+	punctuation = punkts()
 
 	tokenized_data = raw_data.map(tokenize, batched=True)
 
