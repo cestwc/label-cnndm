@@ -117,6 +117,13 @@ class MyProblem(Problem):
 	def _evaluate(self, x, out, *args, **kwargs):
 		out["F"] = obj_func(self.inputs, x)
 
+algorithm = GA(	
+	pop_size=28,
+	sampling=get_sampling("bin_random"),
+	crossover=get_crossover("bin_hux"),
+	mutation=get_mutation("bin_bitflip"),
+	eliminate_duplicates=True)
+			
 def highlight(e):
 	e['labels'][e['confined']] = minimize(MyProblem(e),
 										 algorithm,
@@ -138,13 +145,6 @@ def main():
 	scorer = rouge_scorer.RougeScorer(['rouge1', 'rouge2', 'rougeL'], use_stemmer=True)
 
 	table_ = str.maketrans(string.punctuation, ' '*len(string.punctuation))
-
-	algorithm = GA(
-		pop_size=28,
-		sampling=get_sampling("bin_random"),
-		crossover=get_crossover("bin_hux"),
-		mutation=get_mutation("bin_bitflip"),
-		eliminate_duplicates=True)
 
 	labelled_data = tokenized_data.map(highlight, batched=False)
 
