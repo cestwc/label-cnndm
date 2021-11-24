@@ -31,24 +31,24 @@ parser.add_argument("--save", type=str, default='/content/drive/My Drive/Colab N
 opt = parser.parse_args()
 
 def alike(tokenizer):
-    vocab = tokenizer.get_vocab()
-    tokens = {k:{v} for k, v in vocab.items()}
-    s = tokenizer.convert_ids_to_tokens(1437)
-    for k in tokens:
-        if not k.islower():
-            if s in k:
-                naked = k.replace(s, '')
-                if naked in tokens:
-                    tokens[k].add(vocab[naked])
-                    tokens[naked] = tokens[k]
-            else:
-                naked = k
-            lowercase = naked.lower()
-            if lowercase in tokens:
-                tokens[k].add(vocab[lowercase])
-                tokens[lowercase] = tokens[k]
+	vocab = tokenizer.get_vocab()
+	tokens = {k:{v} for k, v in vocab.items()}
+	s = tokenizer.convert_ids_to_tokens(1437)
+	for k in tokens:
+		if not k.islower():
+			if s in k:
+				naked = k.replace(s, '')
+				if naked in tokens:
+					tokens[k].add(vocab[naked])
+					tokens[naked] = tokens[k]
+			else:
+				naked = k
+			lowercase = naked.lower()
+			if lowercase in tokens:
+				tokens[k].add(vocab[lowercase])
+				tokens[lowercase] = tokens[k]
 
-    return {vocab[k]:v for k, v in tokens.items()}
+	return {vocab[k]:v for k, v in tokens.items()}
 
 def enlarge(ids):
     A = set(ids)
