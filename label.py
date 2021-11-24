@@ -55,8 +55,6 @@ def alike():
 
 interchangeable = alike()
 
-	punctuation = punkts()
-
 def enlarge(ids):
 	A = set(ids)
 	B = set().union(*[interchangeable[a] for a in A])
