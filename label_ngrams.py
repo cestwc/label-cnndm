@@ -106,7 +106,7 @@ def bigrams(e):
 def tokenize(e):
 	article = tokenizer(e['article'], truncation=True)
 	highlights = tokenizer(e['highlights'], truncation=True)
-	article['highlight_ids'] = highlights['input_ids']
+	article['highlights_ids'] = highlights['input_ids']
 	return article
 
 def main():
