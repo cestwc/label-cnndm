@@ -114,7 +114,7 @@ def main():
 	
 	for k in cnn_dailymail:
 
-		cnn_dailymail[k] = cnn_dailymail[k].shard(3000, 0).map(tokenize, batched=True)
+		cnn_dailymail[k] = cnn_dailymail[k].map(tokenize, batched=True)
 
 		cnn_dailymail[k] = cnn_dailymail[k].map(unigrams, batched=False)
 
