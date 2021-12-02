@@ -119,6 +119,8 @@ def main():
 		cnn_dailymail[k] = cnn_dailymail[k].map(unigrams, batched=False)
 
 		cnn_dailymail[k] = cnn_dailymail[k].map(bigrams, batched=False)
+		
+	cnn_dailymail.remove_columns_(['attention_mask', 'highlights_ids'])
 
 	cnn_dailymail.save_to_disk(opt.save)
 
