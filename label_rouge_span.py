@@ -81,12 +81,13 @@ def main():
 	cnn_dailymail = load_from_disk(opt.dataPath)
 	
 	for k in cnn_dailymail:
+		if k != 'train':
 
-		cnn_dailymail[k] = cnn_dailymail[k].map(tokenize, batched=True)
+			cnn_dailymail[k] = cnn_dailymail[k].map(tokenize, batched=True)
 
-		cnn_dailymail[k].set_format(type = 'numpy', columns=['input_ids', 'highlights'])
-		
-		cnn_dailymail[k] = cnn_dailymail[k].map(span, batched=False)
+			cnn_dailymail[k].set_format(type = 'numpy', columns=['input_ids', 'highlights'])
+
+			cnn_dailymail[k] = cnn_dailymail[k].map(span, batched=False)
 		
 	cnn_dailymail.remove_columns_(['attention_mask'])
 
