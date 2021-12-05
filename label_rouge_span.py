@@ -81,7 +81,7 @@ def main():
 	cnn_dailymail = load_from_disk(opt.dataPath)
 	
 	for k in cnn_dailymail:
-		if k != 'train':
+		if k == 'test':
 
 			cnn_dailymail[k] = cnn_dailymail[k].map(tokenize, batched=True)
 
@@ -89,7 +89,7 @@ def main():
 
 			cnn_dailymail[k] = cnn_dailymail[k].map(span, batched=False)
 		
-	cnn_dailymail.remove_columns_(['attention_mask'])
+# 	cnn_dailymail.remove_columns_(['attention_mask'])
 
 	cnn_dailymail.save_to_disk(opt.save)
 	
