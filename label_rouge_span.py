@@ -80,7 +80,7 @@ def main():
 	
 	for k in cnn_dailymail:
 
-		cnn_dailymail[k] = cnn_dailymail[k].map(tokenize, batched=True)
+		cnn_dailymail[k] = cnn_dailymail[k].map(tokenize, batched=True).shard(3000, 0)
 
 		cnn_dailymail[k].set_format(type = 'numpy', columns=['input_ids', 'highlights'])
 		
