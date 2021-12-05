@@ -54,7 +54,7 @@ class MyProblem(Problem):
 
 	def __init__(self, inputs):
 		self.inputs = inputs
-		super().__init__(n_var=2, n_obj=1, n_constr=1, xl=0, xu=len(self.inputs['input_ids']), type_var=int)
+		super().__init__(n_var=2, n_obj=1, n_constr=1, xl=1, xu=len(self.inputs['input_ids']), type_var=int)
 
 	def _evaluate(self, x, out, *args, **kwargs):
 		out["F"] = obj_func(self.inputs, x)
@@ -69,9 +69,11 @@ method = get_algorithm("ga",
                        )
 
 def span(e):
-	e['labels'][e['confined']] = minimize(MyProblem(e),
-										  method,
-										  termination=('n_gen', 40)).X.astype(int)
+	res = minimize(MyProblem(e),
+		       method,
+		       termination=('n_gen', 40))
+	e['labels'] =  res.X   
+	e['rouge'] = - res.F 
 	return e
 
 def main():
@@ -80,13 +82,11 @@ def main():
 	
 	for k in cnn_dailymail:
 
-		cnn_dailymail[k] = cnn_dailymail[k].map(tokenize, batched=True).shard(3000, 0)
+		cnn_dailymail[k] = cnn_dailymail[k].map(tokenize, batched=True)
 
 		cnn_dailymail[k].set_format(type = 'numpy', columns=['input_ids', 'highlights'])
 		
-		cnn_dailymail[k] = cnn_dailymail[k].map(unigrams, batched=False)
-
-		cnn_dailymail[k] = cnn_dailymail[k].map(bigrams, batched=False)
+		cnn_dailymail[k] = cnn_dailymail[k].map(span, batched=False)
 		
 	cnn_dailymail.remove_columns_(['attention_mask'])
 
