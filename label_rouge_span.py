@@ -20,9 +20,9 @@ from pymoo.optimize import minimize
 # os.environ["CUDADEVICE_ORDER"] = "PCIBUS_ID"
 
 parser = argparse.ArgumentParser(description="cnn_dailymail")
-# parser.add_argument("--split", type=str, default='train', help='which split of dataset')
-# parser.add_argument("--shard", type=int, default=128, help="divide the dataset into")
-# parser.add_argument("--index", type=int, default=0, help="which partition")
+parser.add_argument("--split", type=str, default='train', help='which split of dataset')
+parser.add_argument("--shard", type=int, default=128, help="divide the dataset into")
+parser.add_argument("--index", type=int, default=0, help="which partition")
 parser.add_argument("--dataPath", type=str, default='cnn_dailymail', help='path of files to process')
 parser.add_argument("--save", type=str, default='cnn_dailymail_rouge_span', help='path to save processed data')
 # parser.add_argument('--shard', action="store_true", help='use DnCNN as reference?')
@@ -77,23 +77,26 @@ def span(e):
 	return e
 
 def main():
-# 	raw_data = load_from_disk(opt.dataPath)[opt.split].filter(useful).shard(opt.shard, opt.index)
-	cnn_dailymail = load_from_disk(opt.dataPath)
+# 	cnn_dailymail = load_from_disk(opt.dataPath)
 	
-	for k in cnn_dailymail:
-		if k == 'test':
+# 	for k in cnn_dailymail:
+# 		if k == 'test':
 
-			cnn_dailymail[k] = cnn_dailymail[k].map(tokenize, batched=True)
+# 			cnn_dailymail[k] = cnn_dailymail[k].map(tokenize, batched=True)
 
-			cnn_dailymail[k].set_format(type = 'numpy', columns=['input_ids', 'highlights'])
+# 			cnn_dailymail[k].set_format(type = 'numpy', columns=['input_ids', 'highlights'])
 
-			cnn_dailymail[k] = cnn_dailymail[k].map(span, batched=False)
+# 			cnn_dailymail[k] = cnn_dailymail[k].map(span, batched=False)
 		
-# 	cnn_dailymail.remove_columns_(['attention_mask'])
+# # 	cnn_dailymail.remove_columns_(['attention_mask'])
 
-	cnn_dailymail.save_to_disk(opt.save)
+# 	cnn_dailymail.save_to_disk(opt.save)
 	
-# 	labelled_data.save_to_disk(f"{opt.save}/{opt.split}_{opt.shard}_{opt.index}")
+	raw_data = load_from_disk(opt.dataPath)[opt.split].filter(useful).shard(opt.shard, opt.index)	
+	tokenized_data = raw_data.map(tokenize, batched=True)
+	tokenized_data.set_format(type = 'numpy', columns=['input_ids', 'highlights'])
+	labelled_data = tokenized_data.map(span, batched=False)	
+	labelled_data.save_to_disk(f"{opt.save}/{opt.split}_{opt.shard}_{opt.index}")
 
 
 if __name__ == "__main__":
