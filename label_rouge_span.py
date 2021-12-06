@@ -92,7 +92,7 @@ def main():
 
 # 	cnn_dailymail.save_to_disk(opt.save)
 	
-	raw_data = load_from_disk(opt.dataPath)[opt.split].filter(useful).shard(opt.shard, opt.index)	
+	raw_data = load_from_disk(opt.dataPath)[opt.split].shard(opt.shard, opt.index)	
 	tokenized_data = raw_data.map(tokenize, batched=True)
 	tokenized_data.set_format(type = 'numpy', columns=['input_ids', 'highlights'])
 	labelled_data = tokenized_data.map(span, batched=False)	
