@@ -96,7 +96,7 @@ def main():
 	tokenized_data = raw_data.map(tokenize, batched=True)
 	tokenized_data.set_format(type = 'numpy', columns=['input_ids', 'highlights'])
 	labelled_data = tokenized_data.map(span, batched=False)	
-	labelled_data.remove_columns_(['articles', 'attention_mask'])
+	labelled_data.remove_columns_(['article', 'attention_mask'])
 	labelled_data.save_to_disk(f"{opt.save}/{opt.split}_{opt.shard}_{opt.index}")
 
 
