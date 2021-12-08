@@ -77,27 +77,26 @@ def span(e):
 	return e
 
 def main():
-# 	cnn_dailymail = load_from_disk(opt.dataPath)
+	cnn_dailymail = load_from_disk(opt.dataPath)
 	
-# 	for k in cnn_dailymail:
-# 		if k == 'test':
+	for k in cnn_dailymail:
 
-# 			cnn_dailymail[k] = cnn_dailymail[k].map(tokenize, batched=True)
+		cnn_dailymail[k] = cnn_dailymail[k].map(tokenize, batched=True)
 
-# 			cnn_dailymail[k].set_format(type = 'numpy', columns=['input_ids', 'highlights'])
+		cnn_dailymail[k].set_format(type = 'numpy', columns=['input_ids', 'highlights'])
 
-# 			cnn_dailymail[k] = cnn_dailymail[k].map(span, batched=False)
+		cnn_dailymail[k] = cnn_dailymail[k].map(span, batched=False)
 		
-# # 	cnn_dailymail.remove_columns_(['attention_mask'])
+	cnn_dailymail.remove_columns_(['attention_mask'])
 
-# 	cnn_dailymail.save_to_disk(opt.save)
+	cnn_dailymail.save_to_disk(opt.save)
 	
-	raw_data = load_from_disk(opt.dataPath)[opt.split].shard(opt.shard, opt.index)	
-	tokenized_data = raw_data.map(tokenize, batched=True)
-	tokenized_data.set_format(type = 'numpy', columns=['input_ids', 'highlights'])
-	labelled_data = tokenized_data.map(span, batched=False)	
-	labelled_data.remove_columns_(['article', 'attention_mask'])
-	labelled_data.save_to_disk(f"{opt.save}/{opt.split}_{opt.shard}_{opt.index}")
+# 	raw_data = load_from_disk(opt.dataPath)[opt.split].shard(opt.shard, opt.index)	
+# 	tokenized_data = raw_data.map(tokenize, batched=True)
+# 	tokenized_data.set_format(type = 'numpy', columns=['input_ids', 'highlights'])
+# 	labelled_data = tokenized_data.map(span, batched=False)	
+# 	labelled_data.remove_columns_(['article', 'attention_mask'])
+# 	labelled_data.save_to_disk(f"{opt.save}/{opt.split}_{opt.shard}_{opt.index}")
 
 
 if __name__ == "__main__":
