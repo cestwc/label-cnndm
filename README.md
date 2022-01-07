@@ -8,7 +8,7 @@ pip install transformers > /dev/null
 pip install rouge-score > /dev/null
 pip install pymoo >/dev/null
 ```
-prepare Huggingface `cnn_dailymail` dataset (load from official Huggingface website, and use `save_to_disk` to save the dataset (dict) into a folder on your disk), agd get this repository ready
+prepare Huggingface `cnn_dailymail` dataset (load from official (Huggingface)[https://huggingface.co/datasets/cnn_dailymail] website, and use `save_to_disk` to save the dataset (dict) into a folder on your disk), and get this repository ready
 
 ```
 python label_ngrams.py #--shard 10000 --index 0
