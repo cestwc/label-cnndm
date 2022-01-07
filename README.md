@@ -11,7 +11,7 @@ pip install pymoo >/dev/null
 prepare Huggingface `cnn_dailymail` dataset, agd get this repository ready
 
 ```
-python label_rougest_subsequence.py --shard 10000 --index 0
+python label_ngrams.py #--shard 10000 --index 0
 ```
 
 ## Align sharded dataset with original one
@@ -19,7 +19,6 @@ python label_rougest_subsequence.py --shard 10000 --index 0
 ```python
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.ndimage import gaussian_filter1d as gf
 
 from transformers import RobertaTokenizerFast, RobertaForTokenClassification
 
@@ -73,6 +72,8 @@ def align(e, tab = tab):
 newtest = cnn_dailymail['test'].map(align, batched = False).map(rouge, batched=False)
 ```
 ```python
+from scipy.ndimage import gaussian_filter1d as gf
+
 np.median(np.array(newtest['ROUGE']), axis =0)
 
 plt.plot(gf([x[0][2] for x in newtest['ROUGE']], 10))
