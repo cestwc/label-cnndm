@@ -21,7 +21,7 @@ parser.add_argument("--shard", type=int, default=128, help="divide the dataset i
 parser.add_argument("--index", type=int, default=0, help="which partition")
 parser.add_argument("--dataPath", type=str, default='xsum', help='path of files to process')
 parser.add_argument("--save", type=str, default='xsum_ngrams', help='path to save processed data')
-# parser.add_argument('--shard', action="store_true", help='use DnCNN as reference?')
+parser.add_argument('--entire', action="store_true", help='process the entire dataset?')
 # parser.add_argument("--preprocess", type=bool, default=False, help='run prepare_data or not')
 # parser.add_argument("--lr", type=float, default=1e-3, help="Initial learning rate")
 
@@ -113,12 +113,20 @@ def tokenize(e):
 	return article
 
 def main():
-	raw_data = load_dataset(opt.dataset)[opt.split].shard(opt.shard, opt.index)	
-	data_tokenized = raw_data.map(tokenize, batched=True)
-	data_unigramed = data_tokenized.map(unigrams)
-	data_unigramed.save_to_disk(f"{opt.save}/{opt.split}_{opt.shard}_{opt.index}")
-	data_unigramed.remove_columns_(['attention_mask', 'target_ids'])
-	data_unigramed.save_to_disk(opt.save)
+	if opt.entire:
+		raw_data = load_dataset(opt.dataset)	
+		for k in raw_data:
+			raw_data[k] = raw_data[k].map(tokenize, batched=True)
+			raw_data[k] = raw_data[k].map(unigrams, batched=False)
+# 			raw_data[k] = raw_data[k].map(bigrams, batched=False)
+		raw_data = raw_data.remove_columns(['attention_mask', 'highlights_ids'])
+		raw_data.save_to_disk(opt.save)
+	else:
+		raw_data = load_dataset(opt.dataset)[opt.split].shard(opt.shard, opt.index)	
+		data_tokenized = raw_data.map(tokenize, batched=True)
+		data_unigramed = data_tokenized.map(unigrams)
+		data_ngramed = data_unigramed.remove_columns(['attention_mask', 'target_ids'])
+		data_ngramed.save_to_disk(f"{opt.save}/{opt.split}_{opt.shard}_{opt.index}")
 
 
 if __name__ == "__main__":
