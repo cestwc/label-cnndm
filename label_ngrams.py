@@ -14,6 +14,7 @@ from datasets import load_dataset, load_from_disk
 
 parser = argparse.ArgumentParser(description="relabel datasets")
 parser.add_argument("--dataset", type=str, default='xsum', help='dataset to process')
+parser.add_argument("--subset", type=str, default=None, help='dataset to process')
 parser.add_argument("--source", type=str, default='document', help='source key')
 parser.add_argument("--target", type=str, default='summary', help='target key')
 parser.add_argument("--split", type=str, default='train', help='which split of dataset')
@@ -114,7 +115,7 @@ def tokenize(e):
 
 def main():
 	if opt.entire:
-		raw_data = load_dataset(opt.dataset)	
+		raw_data = load_dataset(opt.dataset) if not opt.subset else load_dataset(opt.dataset, opt.subset)
 		for k in raw_data:
 			raw_data[k] = raw_data[k].map(tokenize, batched=True)
 			raw_data[k] = raw_data[k].map(unigrams, batched=False)
