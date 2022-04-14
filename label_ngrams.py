@@ -119,7 +119,7 @@ def main():
 			raw_data[k] = raw_data[k].map(tokenize, batched=True)
 			raw_data[k] = raw_data[k].map(unigrams, batched=False)
 # 			raw_data[k] = raw_data[k].map(bigrams, batched=False)
-		raw_data = raw_data.remove_columns(['attention_mask', 'highlights_ids'])
+		raw_data = raw_data.remove_columns(['attention_mask', 'target_ids'])
 		raw_data.save_to_disk(opt.save)
 	else:
 		raw_data = load_dataset(opt.dataset)[opt.split].shard(opt.shard, opt.index)	
