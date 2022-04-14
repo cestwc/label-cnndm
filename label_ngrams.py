@@ -12,12 +12,15 @@ from datasets import load_dataset, load_from_disk
 
 # os.environ["CUDADEVICE_ORDER"] = "PCIBUS_ID"
 
-parser = argparse.ArgumentParser(description="cnn_dailymail")
-# parser.add_argument("--split", type=str, default='train', help='which split of dataset')
-# parser.add_argument("--shard", type=int, default=128, help="divide the dataset into")
-# parser.add_argument("--index", type=int, default=0, help="which partition")
-parser.add_argument("--dataPath", type=str, default='cnn_dailymail', help='path of files to process')
-parser.add_argument("--save", type=str, default='cnn_dailymail_ngrams', help='path to save processed data')
+parser = argparse.ArgumentParser(description="relabel datasets")
+parser.add_argument("--dataset", type=str, default='xsum', help='dataset to process')
+parser.add_argument("--source", type=str, default='document', help='source key')
+parser.add_argument("--target", type=str, default='summary', help='target key')
+parser.add_argument("--split", type=str, default='train', help='which split of dataset')
+parser.add_argument("--shard", type=int, default=128, help="divide the dataset into")
+parser.add_argument("--index", type=int, default=0, help="which partition")
+parser.add_argument("--dataPath", type=str, default='xsum', help='path of files to process')
+parser.add_argument("--save", type=str, default='xsum_ngrams', help='path to save processed data')
 # parser.add_argument('--shard', action="store_true", help='use DnCNN as reference?')
 # parser.add_argument("--preprocess", type=bool, default=False, help='run prepare_data or not')
 # parser.add_argument("--lr", type=float, default=1e-3, help="Initial learning rate")
@@ -63,9 +66,9 @@ punctuation = punkts()
 
 def unigrams(e):
 	input_ids = e['input_ids']
-	highlights_ids = e['highlights_ids']
+	target_ids = e['target_ids']
 	
-	bag = dict(Counter(highlights_ids))
+	bag = dict(Counter(target_ids))
 	vocab = set(input_ids)
 	input_ids = np.array(input_ids)
 	
@@ -83,9 +86,9 @@ def unigrams(e):
 
 def bigrams(e):
 	input_ids = e['input_ids']
-	highlights_ids = e['highlights_ids']
+	target_ids = e['target_ids']
 
-	bag = dict(Counter(list(zip(highlights_ids[:-1], highlights_ids[1:]))))
+	bag = dict(Counter(list(zip(target_ids[:-1], target_ids[1:]))))
 	scope = set(list(zip(input_ids[:-1], input_ids[1:])))
 	input_ids = np.array(input_ids)
 
@@ -104,25 +107,18 @@ def bigrams(e):
 	return e
 
 def tokenize(e):
-	article = tokenizer(e['article'], truncation=True)
-	highlights = tokenizer(e['highlights'], truncation=True)
-	article['highlights_ids'] = highlights['input_ids']
+	article = tokenizer(e[opt.source], truncation=True)
+	highlights = tokenizer(e[opt.target], truncation=True)
+	article['target_ids'] = highlights['input_ids']
 	return article
 
 def main():
-	cnn_dailymail = load_from_disk(opt.dataPath)
-	
-	for k in cnn_dailymail:
-
-		cnn_dailymail[k] = cnn_dailymail[k].map(tokenize, batched=True)
-
-		cnn_dailymail[k] = cnn_dailymail[k].map(unigrams, batched=False)
-
-		cnn_dailymail[k] = cnn_dailymail[k].map(bigrams, batched=False)
-		
-	cnn_dailymail.remove_columns_(['attention_mask', 'highlights_ids'])
-
-	cnn_dailymail.save_to_disk(opt.save)
+	raw_data = load_dataset(opt.dataset)[opt.split].shard(opt.shard, opt.index)	
+	data_tokenized = raw_data.map(tokenize, batched=True)
+	data_unigramed = data_tokenized.map(unigrams)
+	data_unigramed.save_to_disk(f"{opt.save}/{opt.split}_{opt.shard}_{opt.index}")
+	data_unigramed.remove_columns_(['attention_mask', 'target_ids'])
+	data_unigramed.save_to_disk(opt.save)
 
 
 if __name__ == "__main__":
