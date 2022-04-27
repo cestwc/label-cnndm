@@ -36,7 +36,11 @@ def alike():
 	tokens = {k:{v} for k, v in vocab.items()}
 	s = tokenizer.convert_ids_to_tokens(1437)
 	for k in tokens:
-		naked = k.replace(s, '').lower()
+		naked = k.replace(s, '')
+		if naked in tokens:
+			tokens[naked].add(vocab[k])
+			tokens[k] = tokens[naked]
+		naked = naked.lower()
 		if naked in tokens:
 			tokens[naked].add(vocab[k])
 			tokens[k] = tokens[naked]
