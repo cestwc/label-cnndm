@@ -36,18 +36,10 @@ def alike():
 	tokens = {k:{v} for k, v in vocab.items()}
 	s = tokenizer.convert_ids_to_tokens(1437)
 	for k in tokens:
-		if not k.islower():
-			if s in k:
-				naked = k.replace(s, '')
-				if naked in tokens:
-					tokens[k].add(vocab[naked])
-					tokens[naked] = tokens[k]
-			else:
-				naked = k
-			lowercase = naked.lower()
-			if lowercase in tokens:
-				tokens[k].add(vocab[lowercase])
-				tokens[lowercase] = tokens[k]
+		naked = k.replace(s, '').lower()
+		if naked in tokens:
+			tokens[naked].add(vocab[k])
+			tokens[k] = tokens[naked]
 
 	return {vocab[k]:v for k, v in tokens.items()}
 
